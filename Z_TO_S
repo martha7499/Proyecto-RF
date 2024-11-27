@@ -1,22 +1,30 @@
-classdef S_to_T
-    %%%%%%%%%%%%%%%%%%
-    %FUNCION PARA LA TRANSFORMADA S A T
-    %
+classdef Y_to_Z
+     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     % transformada de valores y a z, en ella se genera cada termino de   %
+     % manera indenpendiente y se guarda en su respectivo lugar de la     %
+     % matriz z                                                           %
+     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     properties
-        T
+        Z %Matriz final de z
+        Zi%Matriz para guardar los parametros en lo que se hace la divisio
+        dt%Determinante de la matriz
     end
     methods
-        function obj=S_to_T(input,n)
-            obj.T=cell(n,n);
-            dt=(-1*(det(vpa(input))));
-            obj.T{1,1}=vpa(dt/(input{2,1}),4);
-            obj.T{1,2}=vpa((input{1,1})/(input{2,1}),4);
-            obj.T{2,1}=vpa((-1*(input{2,2}))/input{2,1},4);
-            obj.T{2,2}=vpa(1/input{2,1},4);
+        function obj=Y_to_Z(input,n)
+                obj.dt=det(str2sym(input));%determinante
+                obj.Zi=cell(n,n);%instanaciar la matriz
+                %colocar valores en cada lugar de la matriz
+                obj.Zi{1,1}= obj.dt;
+                obj.Zi{1,2}=(-1*obj.dt);
+                obj.Zi{2,2}= obj.dt;
+                obj.Zi{2,1}=(-1*obj.dt);
+                %matriz determinada de z
+                obj.Z=(simplify((str2sym(input))./obj.Zi));
         end
-        function displayT(obj)
-            disp('MATRIZ DE T');
-            disp(obj.T);
+         % Método para imprimir la matriz de celdas
+        function displayZ(obj)
+            disp('MATRIZ DE Z');
+            disp(obj.Z);
         end
     end
 end
