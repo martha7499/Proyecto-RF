@@ -228,3 +228,9 @@ T.displayT();
 %% TRANSFORMADA DE S A T CON VALORES 
 T = S_to_T(S2.S,n);
 T.displayT();
+%% ESCRIBIR Y GUARDAR ARCHIVO 
+T_frequencie='HZ';
+T_file='S';
+format='RI';
+Arch=Escribir_Y_Guardar_S2P(S2P.frequencies,S2P.S11,S2P.S12,S2P.S21,S2P.S22,T_frequencie,T_file,format);
+Arch.writeToFile();
