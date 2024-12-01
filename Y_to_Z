@@ -14,10 +14,15 @@ classdef Y_to_Z
                 obj.dt=det(str2sym(input));%determinante
                 obj.Zi=cell(n,n);%instanaciar la matriz
                 %colocar valores en cada lugar de la matriz
-                obj.Zi{1,1}= obj.dt;
-                obj.Zi{1,2}=(-1*obj.dt);
-                obj.Zi{2,2}= obj.dt;
-                obj.Zi{2,1}=(-1*obj.dt);
+                for x=1:n
+                    for y=1:n
+                        if (y==x)
+                            obj.Zi{x,y}=obj.dt;
+                        else
+                            obj.Zi{x,y}=(-1*obj.dt);
+                        end
+                    end
+                end
                 %matriz determinada de z
                 obj.Z=(simplify((str2sym(input))./obj.Zi));
         end
