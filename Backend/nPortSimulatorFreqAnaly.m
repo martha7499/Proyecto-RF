@@ -9,7 +9,7 @@ fprintf('\nStarting reading process ... please be patient.\n\n');
 
 %% Print out the netlist
 fprintf('Netlist:\n');
-fname = "CircuitsExamples/PasaBajas.cir";  % Modify with your file path
+fname = "CircuitsExamples/nPortExample.cir";  % Modify with your file path
 fid = fopen(fname);
 fileIn = textscan(fid, '%s %s %s %s %s %s');
 [Name, N1, N2, arg3, arg4, arg5] = fileIn{:};
@@ -93,27 +93,27 @@ for k1 = 1:nLines
     end
 end
 
-% Completing CCVS and CCCS elements
-for k1 = 1:nLines
-    n1 = N1(k1);
-    n2 = N2(k1);
-    switch Name{k1}(1)
-        case 'H'
-            cv = str2sym(arg3{k1});  
-            cvInd = find(j == cv);  
-            hInd = find(j == str2sym(Name{k1})); 
-            D(hInd, cvInd) = -str2sym(Name{k1});
-        case 'F'
-            cv = str2sym(arg3{k1}); 
-            cvInd = find(j == cv);  
-            if n1 ~= 0
-                B(n1, cvInd) = B(n1, cvInd) + str2sym(Name{k1});
-            end
-            if n2 ~= 0
-                B(n2, cvInd) = B(n2, cvInd) - str2sym(Name{k1});
-            end
-    end
-end
+% % Completing CCVS and CCCS elements
+% for k1 = 1:nLines
+%     n1 = N1(k1);
+%     n2 = N2(k1);
+%     switch Name{k1}(1)
+%         case 'H'
+%             cv = str2sym(arg3{k1});  
+%             cvInd = find(j == cv);  
+%             hInd = find(j == str2sym(Name{k1})); 
+%             D(hInd, cvInd) = -str2sym(Name{k1});
+%         case 'F'
+%             cv = str2sym(arg3{k1}); 
+%             cvInd = find(j == cv);  
+%             if n1 ~= 0
+%                 B(n1, cvInd) = B(n1, cvInd) + str2sym(Name{k1});
+%             end
+%             if n2 ~= 0
+%                 B(n2, cvInd) = B(n2, cvInd) - str2sym(Name{k1});
+%             end
+%     end
+% end
 
 % Form the n-port A matrix
 A_n = [G, B; C, D];
@@ -156,9 +156,9 @@ end
 %% FREQUENCY ANALYSIS
 
 % Definir rango de frecuencias
-f_min = 1e6; % Frecuencia mínima (Hz)
+f_min = 10e6; % Frecuencia mínima (Hz)
 f_max = 100e6; % Frecuencia máxima (Hz)
-f_step = 100e3; % Paso de frecuencia (Hz)
+f_step = 10e3; % Paso de frecuencia (Hz)
 frequencies = f_min:f_step:f_max; % Vector de frecuencias
 omega = 2 * pi * frequencies;    % Frecuencia angular
 
@@ -244,6 +244,7 @@ for i = 1:length(omega)
     Y21(i) = Y_matrix(2, 1);
     Y22(i) = Y_matrix(2, 2);
     
+    % S_f = y2s(Y_matrix, Z0);
     S_f = Y_to_S(Y_matrix, Z0);   % Convertir a S
     S11(i) = S_f(1, 1);
     S12(i) = S_f(1, 2);
@@ -294,10 +295,10 @@ title('Parámetros de Admitancia: Forma Polar');
 legend({'Y_{11}', 'Y_{12}', 'Y_{21}', 'Y_{22}'}, 'Location', 'Best');
 
 % % Graficar en la Carta de Smith
-frequenciesA = linspace(1e6, 100e6, length(S11)); % Frecuencias igualmente espaciadas
-frequenciesB = linspace(1e6, 100e6, length(S12)); % Frecuencias igualmente espaciadas
-frequenciesC = linspace(1e6, 100e6, length(S21)); % Frecuencias igualmente espaciadas
-frequenciesD = linspace(1e6, 100e6, length(S22)); % Frecuencias igualmente espaciadas
+frequenciesA = linspace(f_min, f_max, length(S11)); % Frecuencias igualmente espaciadas
+frequenciesB = linspace(f_min, f_max, length(S12)); % Frecuencias igualmente espaciadas
+frequenciesC = linspace(f_min, f_max, length(S21)); % Frecuencias igualmente espaciadas
+frequenciesD = linspace(f_min, f_max, length(S22)); % Frecuencias igualmente espaciadas
 % smithplot(frequencies, S11);
 
 
