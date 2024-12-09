@@ -9,7 +9,7 @@ format short e;
 
 %% Print out the netlist
 fprintf('Netlist:\n');
-fname = "CircuitsExamples/example5_PasaAltas.cir";  % Modify with your file path
+fname = "CircuitsExamples/example3.cir";  % Modify with your file path
 fid = fopen(fname);
 fileIn = textscan(fid, '%s %s %s %s %s %s');
 [Name, N1, N2, arg3, arg4, arg5] = fileIn{:};
@@ -123,8 +123,8 @@ disp(A_n);
 
 %% Reduction of the n-port network to a 2-port network using Kron
 % Partition the A_n matrix into internal and external nodes
-internal_nodes = 2:n;  % Assuming nodes 3 to n are internal
-external_nodes = [1, 3];  % Ports
+internal_nodes = 3:n;  % Assuming nodes 3 to n are internal
+external_nodes = [1, 2];  % Ports
 
 % Submatrices
 A_ee = A_n(external_nodes, external_nodes);  % External nodes
@@ -188,10 +188,10 @@ for i = 1:length(omega)
     ImpedanceM = subs(ImpedanceM, w, omega(i));
     
     % Convertir el resultado a notación científica (con vpa)
-    ImpedanceM_numeric = vpa(ImpedanceM); 
+    ImpedanceM = vpa(ImpedanceM); 
     
     % Guardar el resultado en la celda
-    results{i} = ImpedanceM_numeric;
+    results{i} = ImpedanceM;
     
     % Mostrar el resultado actual en formato exponencial
     fprintf('Resultado para w = %e:\n', omega(i));

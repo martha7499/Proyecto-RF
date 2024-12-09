@@ -1,9 +1,10 @@
 clear 
-close all
+% close all
 clc
 
 
 % Parámetros del circuito
+L1 = 8.2e-6;
 C1 = 130e-12;  % Capacitancia (Faradios)
 C2 = 47e-12;  % Capacitancia (Faradios)
 R1 = 53;
@@ -25,10 +26,10 @@ Y22 = zeros(size(frequencies));
 % Cálculo de los términos de la matriz para cada frecuencia
 for k = 1:length(omega)
     w = omega(k); % Frecuencia angular actual
-    Y11(k) = 1j * w * C1;
-    Y12(k) = -1j * w * C1;
-    Y21(k) = -1j * w * C1;
-    Y22(k) = 1j * w * C1 + 1j * w * C2 + 1/R1;
+    Y11(k) = C1*w*1i - 1i/(L1*w);
+    Y12(k) = 1i/(L1*w);
+    Y21(k) = 1i/(L1*w);
+    Y22(k) = C2*w*1i - 1i/(L1*w);
 end
 
 % Graficar resultados
