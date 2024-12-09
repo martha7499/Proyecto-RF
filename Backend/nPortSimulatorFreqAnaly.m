@@ -9,7 +9,7 @@ fprintf('\nStarting reading process ... please be patient.\n\n');
 
 %% Print out the netlist
 fprintf('Netlist:\n');
-fname = "CircuitsExamples/example3.cir";  % Modify with your file path
+fname = "CircuitsExamples/PasaBajas.cir";  % Modify with your file path
 fid = fopen(fname);
 fileIn = textscan(fid, '%s %s %s %s %s %s');
 [Name, N1, N2, arg3, arg4, arg5] = fileIn{:};
@@ -117,28 +117,40 @@ end
 
 % Form the n-port A matrix
 A_n = [G, B; C, D];
+nPortM = G;
 
 fprintf('\nThe n-port A matrix (before reduction): \n');
 disp(A_n);
+A_red = G;
 
 %% Reduction of the n-port network to a 2-port network using Kron
-% Partition the A_n matrix into internal and external nodes
-internal_nodes = 3:n;  % Assuming nodes 3 to n are internal
-external_nodes = [1, 2];  % Ports
 
-% Submatrices
-A_ee = A_n(external_nodes, external_nodes);  % External nodes
-A_ei = A_n(external_nodes, internal_nodes); % External-Internal coupling
-A_ie = A_n(internal_nodes, external_nodes); % Internal-External coupling
-A_ii = A_n(internal_nodes, internal_nodes); % Internal nodes
+if n > 2
+    fprintf('\nThe n-port A matrix (before reduction): \n');
+    disp(A_n);
 
-% Kron reduction
-A_red = A_ee - A_ei * (A_ii \ A_ie);
-
-fprintf('\nThe reduced 2-port A matrix:\n');
-disp(A_red);
-
-fprintf('\nElapsed time is %g seconds.\n', toc);
+    % Partition the A_n matrix into internal and external nodes
+    internal_nodes = 2:n-1;  % Assuming nodes 3 to n are internal
+    external_nodes = [1, n];  % Ports
+    
+    % Submatrices
+    A_ee = nPortM(external_nodes, external_nodes);  % External nodes
+    A_ei = nPortM(external_nodes, internal_nodes); % External-Internal coupling
+    A_ie = nPortM(internal_nodes, external_nodes); % Internal-External coupling
+    A_ii = nPortM(internal_nodes, internal_nodes); % Internal nodes
+    
+    % Kron reduction
+    A_red = A_ee - A_ei * (A_ii \ A_ie);
+    
+    fprintf('\nThe reduced 2-port A matrix:\n');
+    disp(A_red);
+    
+    fprintf('\nElapsed time is %g seconds.\n', toc);
+else
+    fprintf('\nThe 2-port matrix: \n');
+    A_red = G;
+    disp(A_red);
+end
 
 
 %% FREQUENCY ANALYSIS
@@ -282,25 +294,32 @@ title('Parámetros de Admitancia: Forma Polar');
 legend({'Y_{11}', 'Y_{12}', 'Y_{21}', 'Y_{22}'}, 'Location', 'Best');
 
 % % Graficar en la Carta de Smith
+frequenciesA = linspace(1e6, 100e6, length(S11)); % Frecuencias igualmente espaciadas
+frequenciesB = linspace(1e6, 100e6, length(S12)); % Frecuencias igualmente espaciadas
+frequenciesC = linspace(1e6, 100e6, length(S21)); % Frecuencias igualmente espaciadas
+frequenciesD = linspace(1e6, 100e6, length(S22)); % Frecuencias igualmente espaciadas
+% smithplot(frequencies, S11);
+
+
 figure;
 
 subplot(2, 2, 1);
-smithplot(frequencies, S11, 'r', 'LineWidth', 1.5);
+smithplot(frequenciesA, -S11);
 title('S(1,1)');
 grid on;
 
 subplot(2, 2, 2);
-smithplot(frequencies, S12, 'b', 'LineWidth', 1.5);
+smithplot(frequenciesB, -S12);
 title('S(1,2)');
 grid on;
 
 subplot(2, 2, 3);
-smithplot(frequencies, S21, 'g', 'LineWidth', 1.5);
+smithplot(frequenciesC, -S21);
 title('S(2,1)');
 grid on;
 
 subplot(2, 2, 4);
-smithplot(frequencies, S22, 'm', 'LineWidth', 1.5);
+smithplot(frequenciesD, -S22);
 title('S(2,2)');
 grid on;
 
