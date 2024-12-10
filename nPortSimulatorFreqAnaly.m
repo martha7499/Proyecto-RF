@@ -9,7 +9,7 @@ fprintf('\nStarting reading process ... please be patient.\n\n');
 
 %% Print out the netlist
 fprintf('Netlist:\n');
-fname = "CircuitsExamples/nPortExample.cir";  % Modify with your file path
+fname = "CircuitsExamples/example3.cir";  % Modify with your file path
 fid = fopen(fname);
 fileIn = textscan(fid, '%s %s %s %s %s %s');
 [Name, N1, N2, arg3, arg4, arg5] = fileIn{:};
@@ -158,7 +158,7 @@ end
 % Definir rango de frecuencias
 f_min = 10e6; % Frecuencia mínima (Hz)
 f_max = 100e6; % Frecuencia máxima (Hz)
-f_step = 10e3; % Paso de frecuencia (Hz)
+f_step = 100e3; % Paso de frecuencia (Hz)
 frequencies = f_min:f_step:f_max; % Vector de frecuencias
 omega = 2 * pi * frequencies;    % Frecuencia angular
 
@@ -256,28 +256,28 @@ end
 % Graficar en carta rectangular
 % Graficar resultados
 figure;
-subplot(2, 2, 1);
+subplot(3, 2, 1);
 plot(frequencies, abs(Y11), 'b', 'LineWidth', 1.5);
 title('|Y_{11}| vs Frecuencia');
 xlabel('Frecuencia (Hz)');
 ylabel('|Y_{11}| (S)');
 grid on;
 
-subplot(2, 2, 2);
+subplot(3, 2, 2);
 plot(frequencies, abs(Y12), 'r', 'LineWidth', 1.5);
 title('|Y_{12}| vs Frecuencia');
 xlabel('Frecuencia (Hz)');
 ylabel('|Y_{12}| (S)');
 grid on;
 
-subplot(2, 2, 3);
+subplot(3, 2, 3);
 plot(frequencies, abs(Y21), 'r', 'LineWidth', 1.5);
 title('|Y_{12}| vs Frecuencia');
 xlabel('Frecuencia (Hz)');
 ylabel('|Y_{12}| (S)');
 grid on;
 
-subplot(2, 2, 4);
+subplot(3, 2, 4);
 plot(frequencies, abs(Y22), 'r', 'LineWidth', 1.5);
 title('|Y_{12}| vs Frecuencia');
 xlabel('Frecuencia (Hz)');

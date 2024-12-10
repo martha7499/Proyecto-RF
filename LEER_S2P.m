@@ -1,4 +1,4 @@
-classdef Leer_S2P
+classdef LEER_S2P
     properties
         S11
         S12
@@ -7,7 +7,7 @@ classdef Leer_S2P
         frequencies
     end
     methods 
-        function obj=Leer_S2P(input)
+        function obj=LEER_S2P(input)
             fileID = fopen(input, 'r');
             obj.frequencies=[];
             S11_r=[];
