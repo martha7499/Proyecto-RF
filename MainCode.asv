@@ -35,25 +35,43 @@ matrix = 'S';
 PolarGraph(S11, S12, S21, S22, matrix);
 
 %% Convert Netlist S to T
-T11_N = zeros(length(freq), 1);
-T12 = zeros(length(freq), 1);
-T21 = zeros(length(freq), 1);
-T22 = zeros(length(freq), 1);
+T11_N = zeros(length(frequencies), 1);
+T12_N = zeros(length(frequencies), 1);
+T21_N = zeros(length(frequencies), 1);
+T22_N = zeros(length(frequencies), 1);
 
+disp(S_matrix{1, 1});
 
-for k = 1:length(freq)
-    TN = S_to_T(S_params{k, 1});
+X =cellfun(@(expr) sym(expr),S_matrix, 'UniformOutput',false);
+
+for k = 1:length(frequencies)
+    TN = S_to_T(X{k, 1});
     T11_N(k) = TN(1, 1);
     T12_N(k) = TN(1, 2);
     T21_N(k) = TN(2, 1);
     T22_N(k) = TN(2, 2);
 end
 
+
+
 %% s2p to T
 
 Z0 = 50;
 fname = 'TouchStoneFiles/Pasa_altas_2do_orden.s2p';
-[T11, T12, T21, T22, freq, f_initial, f_final, f_spot, S_params] = S2pToT(fname, Z0);
+[T11, T12, T21, T22, freq, f_initial, f_final, f_spot, S_params, S_x, T_x] = S2pToT(fname, Z0);
+
+fprintf("Matriz T_x\n");
+disp(T_x{1, 1});
+
+fprintf("Matriz S_x\n");
+disp(S_x{1, 1});
+S11_x = S_X{}
+
+matrix = 'TS';
+SmithGraph(f_initial, f_final, T11, T12, T21, T22, matrix);
 
 matrix = 'T';
 SmithGraph(f_initial, f_final, T11, T12, T21, T22, matrix);
+
+%% T Cascade
+% Tx = CascadeT(TA, TB);

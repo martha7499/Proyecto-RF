@@ -25,8 +25,8 @@ f_step = 1e6; % Paso de frecuencia (Hz)
 
 %% Graph
 
-matrix = 'S';
-RectangularGraph(S11, S12, S21, S22, matrix, frequencies);
+matrix = 'Y';
+RectangularGraph(Y11, Y12, Y21, Y22, matrix, frequencies, 'dB');
 
 matrix = 'S';
 SmithGraph(f_min, f_max, S11, S12, S21, S22, matrix);
@@ -42,19 +42,29 @@ T22_N = zeros(length(frequencies), 1);
 
 disp(S_matrix{1, 1});
 
-% for k = 1:length(frequencies)
-%     TN = S_to_T(S_matrix{k, 1});
-%     T11_N(k) = TN(1, 1);
-%     T12_N(k) = TN(1, 2);
-%     T21_N(k) = TN(2, 1);
-%     T22_N(k) = TN(2, 2);
-% end
+X =cellfun(@(expr) sym(expr),S_matrix, 'UniformOutput',false);
+
+for k = 1:length(frequencies)
+    TN = S_to_T(X{k, 1});
+    T11_N(k) = TN(1, 1);
+    T12_N(k) = TN(1, 2);
+    T21_N(k) = TN(2, 1);
+    T22_N(k) = TN(2, 2);
+end
+
+
 
 %% s2p to T
 
 Z0 = 50;
 fname = 'TouchStoneFiles/Pasa_altas_2do_orden.s2p';
-[T11, T12, T21, T22, freq, f_initial, f_final, f_spot, S_params] = S2pToT(fname, Z0);
+[T11, T12, T21, T22, freq, f_initial, f_final, f_spot, S_params, S11_x, S12_x, S21_x, S22_x, T_x] = S2pToT(fname, Z0);
+
+matrix = 'S_x';
+SmithGraph(f_initial, f_final, -S11_x, -S12_x, -S21_x, -S22_x, matrix);
 
 matrix = 'T';
 SmithGraph(f_initial, f_final, T11, T12, T21, T22, matrix);
+
+%% T Cascade
+% Tx = CascadeT(TA, TB);

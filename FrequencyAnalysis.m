@@ -94,7 +94,7 @@ function [Y11, Y12, Y21, Y22, S11, S12, S21, S22, Y_num, S_matrix, frequencies] 
         S12(i) = S_f(1, 2);
         S21(i) = S_f(2, 1);
         S22(i) = S_f(2, 2);
-        S_matrix{i, 1} = {S11(i), S12(i), S21(i), S22(i)};
+        S_matrix{i, 1} = {S11(i), S12(i); S21(i), S22(i)};
         
     end
 end

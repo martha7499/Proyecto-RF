@@ -1,7 +1,7 @@
-function [Z11, Z12, Z21, Z22] = S2pToT(Z0);
+function [T11, T12, T21, T22, freq, f_min, f_max, f_step, S_params] = S2pToT(fname, Z0)
     % Cargar el archivo Touchstone
     % t=LEER_S2P('TouchStoneFiles/PB_Total.s2p');
-    [freq, f_min, f_max, f_step, S_params] = read_touchstone('TouchStoneFiles/Pasa_banda.s2p');
+    [freq, f_min, f_max, f_step, S_params] = read_touchstone(fname);
     % s_params = sparameters('TouchStoneFiles/Pasa_banda.s2p'); % Reemplaza con tu archivo
     % frec = s_params.Frequencies; % Frecuencias en Hz
     % s_matrix = s_params.Parameters; % Matriz S (complejas
@@ -12,15 +12,52 @@ function [Z11, Z12, Z21, Z22] = S2pToT(Z0);
     Z21 = zeros(length(freq), 1);
     Z22 = zeros(length(freq), 1);
 
+    T11 = zeros(length(freq), 1);
+    T12 = zeros(length(freq), 1);
+    T21 = zeros(length(freq), 1);
+    T22 = zeros(length(freq), 1);
+
+    S11_x = zeros(length(freq), 1);
+    S12_x = zeros(length(freq), 1);
+    S21_x = zeros(length(freq), 1);
+    S22_x = zeros(length(freq), 1);
+
     % Convertir los parámetros S a otros dominios
-     for k = 1:length(freq)
-        Z_matrix = S_to_Z(S_params(k), Z0);   % Convertir a S
+    for k = 1:length(freq)
+        % S11(i) = S_params(1, 1);
+        % S12(i) = S_params(1, 2);
+        % S21(i) = S_params(2, 1);
+        % S22(i) = S_params(2, 2);
+        
+        Z_matrix = S_to_Z(S_params{k, 1}, Z0);   % Convertir a S
         Z11(k) = Z_matrix(1, 1);
         Z12(k) = Z_matrix(1, 2);
         Z21(k) = Z_matrix(2, 1);
         Z22(k) = Z_matrix(2, 2);
-     end
+        
+        T = S_to_T(S_params{k, 1});
+        T11(k) = T(1, 1);
+        T12(k) = T(1, 2);
+        T21(k) = T(2, 1);
+        T22(k) = T(2, 2);
+        
+        S11_x(k) = T21(k)./T11(k);
+        S12_x(k) = ((T11(k)*T22(k))-(T21(k)*T12(k)))./(T11(k));
+        S21_x(k) = 1./T11(k);
+        S22_x(k) = -(T22(k)./T11(k));
+    end
+    
+   
+    SmithGraph(f_min, f_max, M11, M12, M21, M22, matrix);
 
+     % fprintf("Matriz T\n");
+     % disp(T11(1));
+     % disp(T12(1));
+     % disp(T21(1));
+     % disp(T22(1));
+
+
+     % R = [Z11, Z12, Z21, Z22, freq, f_min, f_max, f_step];
     % y_matrix = s2y(s_matrix, z0); % Convertir S a Y
     % abcd_matrix = s2abcd(s_matrix, z0); % Convertir S a ABCD
     % 
@@ -35,3 +72,8 @@ function [Z11, Z12, Z21, Z22] = S2pToT(Z0);
     %     t_matrix(:,:,k) = [A B; C D] ./ D; % Normalización para obtener T
     % end
 end
+
+
+% [T11, T12, T21, T22, freq, f_min, f_max, f_step, S11, S12, S21, S22] = S2pToT(50);
+% [T11, T12, T21, T22, freq, f_min, f_max, f_step, Z11, Z12, Z21, Z22] = S2pToT(50)
+% [T, freq, f_min, f_max, f_step] = S2pToT(50)
