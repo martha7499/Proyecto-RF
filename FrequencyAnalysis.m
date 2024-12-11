@@ -1,4 +1,4 @@
-function [Y11, Y12, Y21, Y22, S11, S12, S21, S22, Y_num, S_f, frequencies] = FrequencyAnalysis(Name, nLines, f_min, f_max, f_step, Y_Matrix, arg3);
+function [Y11, Y12, Y21, Y22, S11, S12, S21, S22, Y_num, S_matrix, frequencies] = FrequencyAnalysis(Name, nLines, f_min, f_max, f_step, Y_Matrix, arg3)
     % % Definir rango de frecuencias
     % f_min = 10e6; % Frecuencia mínima (Hz)
     % f_max = 100e6; % Frecuencia máxima (Hz)
@@ -74,6 +74,7 @@ function [Y11, Y12, Y21, Y22, S11, S12, S21, S22, Y_num, S_f, frequencies] = Fre
     S12 = zeros(1, n_points);
     S21 = zeros(1, n_points);
     S22 = zeros(1, n_points);
+    S_matrix = {};
     
     Z0 = 50; % Impedancia característica
     
@@ -88,12 +89,12 @@ function [Y11, Y12, Y21, Y22, S11, S12, S21, S22, Y_num, S_f, frequencies] = Fre
         Y21(i) = Y_num(2, 1);
         Y22(i) = Y_num(2, 2);
         
-        % S_f = y2s(Y_matrix, Z0);
         S_f = Y_to_S(Y_num, Z0);   % Convertir a S
         S11(i) = S_f(1, 1);
         S12(i) = S_f(1, 2);
         S21(i) = S_f(2, 1);
         S22(i) = S_f(2, 2);
+        S_matrix{i, 1} = {S11(i), S12(i), S21(i), S22(i)};
         
     end
 end

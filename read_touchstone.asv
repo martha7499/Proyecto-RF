@@ -1,0 +1,93 @@
+function [freq, f_min, f_max, f_step, S_params] = read_touchstone(filename)
+    % Lee un archivo Touchstone (*.s2p) sin utilizar RF Toolbox.
+    %
+    % Inputs:
+    %   filename: Nombre del archivo Touchstone (.s2p)
+    %
+    % Outputs:
+    %   freq: Vector de frecuencias en Hz
+    %   S_params: Matriz compleja de parámetros S de dimensiones [2, 2, N]
+    
+    % Abrir el archivo
+    fid = fopen(filename, 'r');
+    if fid == -1
+        error('No se puede abrir el archivo: %s', filename);
+    end
+    
+    % Inicializar variables
+    freq = [];
+    S_params = [];
+    S_temp = [];
+    line_count = 0;
+    
+    % Leer línea por línea
+    while ~feof(fid)
+        line = fgetl(fid); % Leer línea
+        line_count = line_count + 1;
+        
+        % Omitir comentarios y líneas vacías
+        if startsWith(line, '#') % Encabezado de parámetros
+            header = line;
+        elseif startsWith(line, '!')
+            continue; % Saltar comentarios
+        elseif isempty(line)
+            continue;
+        else
+            % Dividir los datos numéricos en la línea
+            data = sscanf(line, '%f');
+            
+            % Verificar el formato del archivo
+            if numel(data) == 9 % Formato para S2P
+                % Leer frecuencia y los 8 elementos de la matriz S
+                freq(end+1, 1) = data(1); % Frecuencia
+                S_temp = [data(2) + 1j * data(3), data(4) + 1j * data(5); % S11, S12
+                          data(6) + 1j * data(7), data(8) + 1j * data(9)]; % S21, S22
+                S_params = cat(3, S_params, S_temp); % Concatenar
+            else
+                warning('Formato inesperado en la línea %d', line_count);
+            end
+        end
+    end
+    
+    fclose(fid); % Cerrar archivo
+    
+    % Analizar el encabezado
+    if exist('header', 'var')
+        fprintf('Archivo leído con encabezado: %s\n', header);
+    else
+        warning('El archivo no contiene un encabezado definido.');
+    end
+    
+    % Convertir frecuencia a Hz si el encabezado especifica otras unidades
+    if contains(header, 'GHZ', 'IgnoreCase', true)
+        freq = freq * 1e9;
+    elseif contains(header, 'MHZ', 'IgnoreCase', true)
+        freq = freq * 1e6;
+    elseif contains(header, 'KHZ', 'IgnoreCase', true)
+        freq = freq * 1e3;
+    end
+
+    % Verificar si el paso de frecuencia es uniforme
+    delta_f = diff(freq); % Diferencias entre frecuencias consecutivas
+    unique_delta_f = unique(delta_f); % Valores únicos de diferencias
+    fprintf('El paso de frecuencia es: %.2f Hz\n', delta_f);
+
+    f_min = min(freq);
+    f_max = max(freq);
+    f_step = delta_f(1,1);
+    % f_step = 10^round(log10(f_step));
+    f_step = round(f_step, -floor(log10(f_step)));
+    fprintf('El número redondeado hacia abajo es: %.1e\n', f_step);
+    
+    % if length(unique_delta_f) == 1
+    %     fprintf('El paso de frecuencia es uniforme: %.2f Hz\n', unique_delta_f);
+    % else
+    %     fprintf('El paso de frecuencia NO es uniforme. Verifica los datos.\n');
+    % end
+
+end
+
+%[freq, f_min, f_max, f_step, S_params] = read_touchstone('TouchStoneFiles/Pasa_Bajas_2do_orden.s2p');
+%[freq, f_min, f_max, f_step, S_params] = read_touchstone('TouchStoneFiles/Pasa_banda.s2p');
+% [freq, f_min, f_max, f_step, S_params] = read_touchstone('TouchStoneFiles/PB_Total.s2p');
+% [freq, f_min, f_max, f_step, S_params] = read_touchstone('TouchStoneFiles/ATF-38143_Vgs_-0.55_Vds_2.s2p');

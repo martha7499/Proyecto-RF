@@ -1,0 +1,37 @@
+function [Z11, Z12, Z21, Z22] = S2pToT(Z0);
+    % Cargar el archivo Touchstone
+    % t=LEER_S2P('TouchStoneFiles/PB_Total.s2p');
+    [freq, f_min, f_max, f_step, S_params] = read_touchstone('TouchStoneFiles/Pasa_banda.s2p');
+    % s_params = sparameters('TouchStoneFiles/Pasa_banda.s2p'); % Reemplaza con tu archivo
+    % frec = s_params.Frequencies; % Frecuencias en Hz
+    % s_matrix = s_params.Parameters; % Matriz S (complejas
+    %z0 = s_params.Impedance; % Impedancia característica (por defecto 50 ohms)
+    
+    Z11 = zeros(length(freq), 1);
+    Z12 = zeros(length(freq), 1);
+    Z21 = zeros(length(freq), 1);
+    Z22 = zeros(length(freq), 1);
+
+    % Convertir los parámetros S a otros dominios
+     for k = 1:length(freq)
+        Z_matrix = S_to_Z(S_params(k), Z0);   % Convertir a S
+        Z11(k) = Z_matrix(1, 1);
+        Z12(k) = Z_matrix(1, 2);
+        Z21(k) = Z_matrix(2, 1);
+        Z22(k) = Z_matrix(2, 2);
+     end
+
+    % y_matrix = s2y(s_matrix, z0); % Convertir S a Y
+    % abcd_matrix = s2abcd(s_matrix, z0); % Convertir S a ABCD
+    % 
+    % % Convertir ABCD a mtriz T (Transmisión)
+    % [n_ports, ~, n_freqs] = size(abcd_matrix); % Asumimos sistema de 2 puertos
+    % t_matrix = zeros(size(abcd_matrix)); % Inicializar matriz T
+    % for k = 1:n_freqs
+    %     A = abcd_matrix(1,1,k);
+    %     B = abcd_matrix(1,2,k);
+    %     C = abcd_matrix(2,1,k);
+    %     D = abcd_matrix(2,2,k);
+    %     t_matrix(:,:,k) = [A B; C D] ./ D; % Normalización para obtener T
+    % end
+end

@@ -35,20 +35,19 @@ matrix = 'S';
 PolarGraph(S11, S12, S21, S22, matrix);
 
 %% Convert Netlist S to T
-T11_N = zeros(length(frequencies), 1);
-T12_N = zeros(length(frequencies), 1);
-T21_N = zeros(length(frequencies), 1);
-T22_N = zeros(length(frequencies), 1);
+T11_N = zeros(length(freq), 1);
+T12 = zeros(length(freq), 1);
+T21 = zeros(length(freq), 1);
+T22 = zeros(length(freq), 1);
 
-disp(S_matrix{1, 1});
 
-% for k = 1:length(frequencies)
-%     TN = S_to_T(S_matrix{k, 1});
-%     T11_N(k) = TN(1, 1);
-%     T12_N(k) = TN(1, 2);
-%     T21_N(k) = TN(2, 1);
-%     T22_N(k) = TN(2, 2);
-% end
+for k = 1:length(freq)
+    TN = S_to_T(S_params{k, 1});
+    T11_N(k) = TN(1, 1);
+    T12_N(k) = TN(1, 2);
+    T21_N(k) = TN(2, 1);
+    T22_N(k) = TN(2, 2);
+end
 
 %% s2p to T
 
